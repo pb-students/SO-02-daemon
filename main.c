@@ -33,7 +33,11 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    if ((chdir("/")) < 0) {
+    if (chdir("/") == -1) {
+        switch (errno) {
+            // NOTE: ENOTDIR, ENOENT, ENAMETOOLONG, ELOOP skipped because they most likely will not occur.
+            case EACCES: printf("Search permission is denied for any component of the pathname."); break;
+        }
         exit(EXIT_FAILURE);
     }
 
@@ -46,7 +50,10 @@ int main() {
         pid_t pid = fork();
         if (pid == 0) {
             char* argv[] = {"notify-send", "hej", NULL};
-            execvp("notify-send", argv);
+            if (execvp("notify-send", argv) == -1) {
+                // TODO: Log to the syslog (To fix in SO-03-syslog)
+                _exit(EXIT_FAILURE);
+            }
         }
 
         if (pid == -1) {
