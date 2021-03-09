@@ -33,6 +33,10 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    if ((chdir("/")) < 0) {
+        exit(EXIT_FAILURE);
+    }
+
     // Close out the standard file descriptors
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
